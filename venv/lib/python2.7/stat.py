@@ -1,0 +1,1 @@
+/Applications/Autodesk/maya2018/Maya.app/Contents/Frameworks/Python.framework/Versions/2.7/lib/python2.7/stat.py
