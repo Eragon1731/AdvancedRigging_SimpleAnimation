@@ -3,7 +3,7 @@ import Utils
 
 CTRL_SCALE = 1
 
-def createCenterLocatorController(selected=None):
+def createCenterLocatorController(selected=None, orient=True):
 
     locs = []
     if selected is None:
@@ -19,7 +19,9 @@ def createCenterLocatorController(selected=None):
         center_loc = mc.spaceLocator(p=center_pos, n=center_name)
         locs.append(center_loc)
         mc.makeIdentity(selected[i], apply=True, translate=True)
-        mc.orientConstraint(center_loc, selected[i], mo=1)
+
+        if(orient):
+            mc.orientConstraint(center_loc, selected[i], mo=1)
 
     return locs
 
@@ -42,9 +44,9 @@ def createSpineControllers(fk_joints=None, ctrl_scale=CTRL_SCALE, createXtra_grp
 def createControllers (selected=None, ctrl_scale=CTRL_SCALE, createXtra_grp=False):
 
     if selected is None:
-        selected = mc.ls(sl=True)
+        selected = mc.ls(sl=True)[0]
 
-    print "selected: ", selected
+    print "selected: ", selected[0]
 
     '''check if is a bnd joint'''
     currlist = [x for x in selected if "joint" in x]
