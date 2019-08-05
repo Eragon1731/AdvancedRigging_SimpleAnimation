@@ -2,7 +2,10 @@ import maya.cmds as mc
 import Utils
 import AdvancedRigging
 
+PETAL_ROWS = []
 
+# This function create keyframes that will bend a petal on an single axis. The User can adjust the frequency
+# of keyframes, the time of animation, the axis the petal bends on and the angle the petal bends at.
 def animatePetals(jnts=None, frequency=5, time=120, axis="Z", curr_bend=1, bend_speed=2):
 
     if jnts is None:
@@ -21,10 +24,6 @@ def animatePetals(jnts=None, frequency=5, time=120, axis="Z", curr_bend=1, bend_
 
     currlist = [x for x in alljnts if "grp" in x]
 
-    print "jnts count", (jnts)
-    print "all jnts count", range(len(alljnts))
-    print "all grps: ", len(currlist)
-
     counter = frequency
     while counter < time:
         for i in range(len(currlist)):
@@ -36,46 +35,76 @@ def animatePetals(jnts=None, frequency=5, time=120, axis="Z", curr_bend=1, bend_
         curr_bend += bend_speed
 
 
+# This function organises the petals around the bulb. The User chooses how petal layers they want,
+# how many petals in the first layer, how many more petals for each ascending layer.
+def movePetalsAroundBulb(petal, bulb="bulb_default_loc", rows=1, num_petals=3, offset=3):
 
-#organise the petals around the bulb. Define how many rows/layer of petals for the flower,
-#how many petals on the first row layer.
-#User must select petal joints in order to move petal
-def movePetalsAroundBulb(joint=None, petal=None, bulb=None, rows=1, num_petals=3):
+    petal_grp = mc.ls(petal, l=True)
 
-    if joint is None:
-        temp = mc.ls(sl=True)[0]
-        joints = mc.listRelatives(temp, ad=True)
-        petal_jnt = orderPetalJoints(parent=temp, children=joints)
+    joints = [x for x in mc.listRelatives(petal_grp, ad=True) if "petal_joint" in x]
+    joints.reverse()
 
-    if petal is None:
-        petal = mc.ls(sl=True)[1]
-        print "this is petal_geo: ", petal
-
-    if bulb is None:
-        bulb = mc.ls(sl=True)[2]
-        pos = mc.getAttr(bulb + ".translate")
+    '''get the position of the bulb'''
+    pos = mc.getAttr(bulb + ".translate")
 
     '''track all parent joints'''
-    base_jnts = [petal_jnt[0]]
-    all_joints = [petal_jnt]
+    petals = [[petal]]
+    all_joints = [joints]
 
-    print "this is petal : ", petal_jnt
-    for i in range(num_petals-1):
-        temp_jnts = mc.duplicate(petal_jnt, rc=True)
-        temp_petal = mc.duplicate(petal, rc=True)
-        mc.bindSkin(temp_jnts, temp_petal)
-        base_jnts.append(temp_jnts[0])
-        all_joints.append(temp_jnts)
+    '''create all the petals in for each row'''
+    for j in range(rows):
 
-    '''arrange petals for one row'''
-    for i in range(len(base_jnts)):
-        mc.rotate((360/num_petals) * i, 0, 0, base_jnts[i], os=True)
-        mc.move(pos[0][0], pos[0][1], pos[0][2], base_jnts[i], a=True)
+        for i in range(num_petals-1):
 
-        AdvancedRigging.createSpineControllers(all_joints[i], ctrl_scale=1,createXtra_grp=False)
+            '''keep track of all the petals in a single row with temporary array'''
+            base_petals = []
+
+            '''duplicate and arrange petals into groups to manipulate later'''
+            temp_petal = mc.duplicate(petal, rc=True)
+            curr_petal = [x for x in temp_petal if "petal_grp" in x]
+            petals.append(curr_petal)
+            base_petals.append(curr_petal)
+            temp_jnts = [x for x in mc.listRelatives(temp_petal, ad=True) if "petal_joint" in x]
+            temp_jnts.reverse()
+            all_joints.append(temp_jnts)
+
+        '''track all the petal joints in each row so User can adjust by row'''
+        PETAL_ROWS.append(base_petals)
+
+    '''distance and rotate the petals around the bulb for each row of petals'''
+    for j in range(rows):
+        for i in range(1, len(petals)):
+
+            mc.rotate(0, (360/num_petals) * i, 0, petals[i], os=True)
+            mc.move(pos[0][0], pos[0][1], pos[0][2] + (j * offset), petals[i], os=True, r=True)
+            mc.bindSkin(petals[i], all_joints[i])
+
+            '''create the spine rigs for each petal'''
+            AdvancedRigging.createLinearSpineControllers(all_joints[i], ctrl_scale=1, createXtra_grp=False)
 
 
-#rename all children
+# This function adjusts the position and angle of a row of petals.
+def adjustPetalRowAnimation(row_index=0, pos_offset=(0, 0, 0), angle=45, axis="Y"):
+
+    '''for a selected row of petals, adjust the initial state'''
+    curr_row = PETAL_ROWS[row_index]
+
+    for petal in curr_row:
+        mc.setAttr(petal + ".rotate" + axis, )
+        mc.rotate(0,angle,0, petal, os=True)
+        mc.move(pos_offset[0],pos_offset[1],pos_offset[2], petal, os=True, r=True)
+
+
+# This function adjusts the position and rotation of a single petal. Petal must be selected in the scene.
+def adjustSinglePetalAnimation(petal=None, bend=1, axis="Y"):
+
+    if petal is None:
+        petal = mc.ls(sl=True)
+
+    petal.setAttr(petal + ".rotate"+axis, bend)
+
+
+# This function orders all petal joints in a recognizable format. Used for custom petals
 def orderPetalJoints(parent, children):
 
     petal_jnt = []
@@ -88,6 +117,7 @@ def orderPetalJoints(parent, children):
     return petal_jnt
 
 
+# This function renames the petal geo and joints in recognizable format. Used for custom petals
 def renamePetalChildren(jnts, separator, suffix):
 
     new_names = []

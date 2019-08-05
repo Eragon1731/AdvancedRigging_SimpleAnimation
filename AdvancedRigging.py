@@ -6,45 +6,33 @@ CTRL_SCALE = 1
 def createCenterLocatorController(selected=None, orient=True):
 
     locs = []
-    if selected is None:
-        selected = mc.ls(sl=True)
 
-    for i in range(len(selected)):
+    center_pos = mc.xform(selected, q=True, t=True)
+    center_name = selected[0] + "_loc"
 
-        center_pos = mc.xform(selected[i], q=True, t=True)
+    center_loc = mc.spaceLocator(p=center_pos, n=center_name)
+    locs.append(center_loc)
+    mc.makeIdentity(selected, apply=True, translate=True)
 
-        print "child is: ", selected[i], "at: ", center_pos
-
-        center_name = selected[i] + "_loc"
-        center_loc = mc.spaceLocator(p=center_pos, n=center_name)
-        locs.append(center_loc)
-        mc.makeIdentity(selected[i], apply=True, translate=True)
-
-        if(orient):
-            mc.orientConstraint(center_loc, selected[i], mo=1)
+    if(orient):
+        mc.orientConstraint(center_loc, selected, mo=1)
 
     return locs
 
 
-def createSpineControllers(fk_joints=None, ctrl_scale=CTRL_SCALE, createXtra_grp=False):
-
-    if fk_joints is None:
-        fk_joints = mc.ls(sl=True)
+# This function creates a rig that will bend the petal in a Linear manner. The root jnt is
+# at the bottom of the petal and there is a single chain going up the petal
+def createLinearSpineControllers(fk_joints=None, ctrl_scale=CTRL_SCALE, createXtra_grp=False):
 
     grps, names = createControllers(selected=fk_joints, ctrl_scale=ctrl_scale,
                                     createXtra_grp=createXtra_grp)
-
-    print "names: ", names
     for i in range(1, len(grps)):
         mc.parent(grps[i], names[i - 1])
 
     return names
 
 
-def createControllers (selected=None, ctrl_scale=CTRL_SCALE, createXtra_grp=False):
-
-    if selected is None:
-        selected = mc.ls(sl=True)[0]
+def createControllers (selected, shape= "circle", ctrl_scale=CTRL_SCALE, createXtra_grp=False):
 
     print "selected: ", selected[0]
 
@@ -62,7 +50,7 @@ def createControllers (selected=None, ctrl_scale=CTRL_SCALE, createXtra_grp=Fals
         ''' get new names'''
         ctrlname = Utils.addSuffix(currlist[i], "ctrl", "_")
         grpname = Utils.addSuffix(currlist[i], "grp", "_")
-        orientname = Utils.addSuffix(currlist[i], "oct", "_")
+       # orientname = Utils.addSuffix(currlist[i], "oct", "_")
         parentname = Utils.addSuffix(currlist[i], "par", "_")
 
         '''joint position'''
@@ -82,7 +70,7 @@ def createControllers (selected=None, ctrl_scale=CTRL_SCALE, createXtra_grp=Fals
         '''orient constraint'''
         tempconstraint = mc.orientConstraint(currlist[i], grp, mo=0)
         mc.delete(tempconstraint)
-        mc.orientConstraint(ctrl, selected[i], mo=1, name=orientname)
+        #mc.orientConstraint(ctrl, selected[i], mo=1, name=orientname)
 
         '''parent constraints'''
         mc.parentConstraint(ctrl, selected[i], mo=1, name=parentname)
