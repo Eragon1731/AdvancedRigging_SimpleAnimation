@@ -15,9 +15,9 @@ def StepOne(bulb="bulb_default", petal="petal_default"):
     Flower.createPetal(petal_path)
 
 #Step 2: Move Petals in place. Specify name of the parent petal joint, petal geo name, and bulb locator name in this order
-def StepTwo(petal_name):
-    FlowerAnimation.movePetalsAroundBulb(petal=petal_name)
+def StepTwo(petal_name, bulb_name, petal_rows=1):
+    FlowerAnimation.movePetalsAroundBulb(petal=petal_name, bulb=bulb_name, rows=petal_rows)
 
 #Step 3: Rig and Animation joints. Select the controller group for each petal
 def StepThree():
-    FlowerAnimation.animatePetals(axis="Y")
+    FlowerAnimation.animatePetals(axis="Z")

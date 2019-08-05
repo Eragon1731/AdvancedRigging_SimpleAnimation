@@ -17,6 +17,11 @@ def createCenterLocatorController(selected=None, orient=True):
     if(orient):
         mc.orientConstraint(center_loc, selected, mo=1)
 
+    mc.rename(selected[0], selected[0]+"_geo")
+
+    if mc.ls(selected[0]) > 0:
+        mc.group(selected[0] + "_geo", center_loc, name=Utils.changeSuffix(selected[0], "geo", "", "_"))
+
     return locs
 
 
@@ -42,15 +47,12 @@ def createControllers (selected, shape= "circle", ctrl_scale=CTRL_SCALE, createX
     ctrlnames = []
     grpnames = []
 
-    print "currlist: "
-
     '''creating controllers'''
     for i in range(len(currlist)):
 
         ''' get new names'''
         ctrlname = Utils.addSuffix(currlist[i], "ctrl", "_")
         grpname = Utils.addSuffix(currlist[i], "grp", "_")
-       # orientname = Utils.addSuffix(currlist[i], "oct", "_")
         parentname = Utils.addSuffix(currlist[i], "par", "_")
 
         '''joint position'''
@@ -70,7 +72,6 @@ def createControllers (selected, shape= "circle", ctrl_scale=CTRL_SCALE, createX
         '''orient constraint'''
         tempconstraint = mc.orientConstraint(currlist[i], grp, mo=0)
         mc.delete(tempconstraint)
-        #mc.orientConstraint(ctrl, selected[i], mo=1, name=orientname)
 
         '''parent constraints'''
         mc.parentConstraint(ctrl, selected[i], mo=1, name=parentname)
@@ -78,7 +79,6 @@ def createControllers (selected, shape= "circle", ctrl_scale=CTRL_SCALE, createX
 
         '''get all names'''
         ctrlnames.append(ctrlname)
-        print "ctrlnames: ", ctrlnames
         grpnames.append(grpname)
 
 

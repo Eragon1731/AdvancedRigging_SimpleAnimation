@@ -21,22 +21,24 @@ def createPetal(path):
 
     mc.file(path, i=True)
 
-    '''find the petal'''
+    '''find the petal in the scene'''
     dir_path = os.path.basename(os.path.normpath(path)).split(".")[0]
-
     object = mc.ls(dir_path)
 
+    '''get all the meshes and joints in the petal'''
     children = mc.listRelatives(object, ad=True)[:-1]
 
     joints = []
     meshes = []
+
+    '''separate the children in meshes and joints'''
     for i in range(len(children)):
         print mc.objectType(children[i])
         if mc.objectType(children[i]) == "joint":
-            mc.rename(children[i], "petal_joint" + str(i))
+            mc.rename(children[i], "petal_joint_" + str(i))
             joints.append(children[i])
         elif mc.objectType(children[i]) == "mesh":
-            mc.rename(children[i], "petal_geo"+str(i))
+            mc.rename(children[i], "petal_geo" + str(i))
             meshes.append(children[i])
 
     return joints, meshes
