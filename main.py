@@ -22,6 +22,14 @@ def StepTwo(petal_name, bulb_name, petal_rows=1, base_petals=3):
     lotus_flower.organiseFlowerPetals()
     lotus_flower.movePetalsAroundBulb(offset=1)
 
+    return lotus_flower
+
 #Step 3: Rig and Animation joints. Select the controller group for each petal
 def StepThree():
-    FlowerAnimation.animatePetals(axis="Z")
+    FlowerAnimation.animatePetals()
+
+
+
+def adjustPetals(case):
+
+    if case

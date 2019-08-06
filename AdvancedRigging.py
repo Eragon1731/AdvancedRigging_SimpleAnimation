@@ -59,7 +59,7 @@ def createControllers (selected, shape= "circle", ctrl_scale=CTRL_SCALE, createX
         jnt_pos = mc.xform(currlist[i], q=True, translation=True, ws=True)
 
         '''create and place controller'''
-        ctrl = mc.circle(n=ctrlname, r=ctrl_scale, normal=(1, 0, 0))[0]
+        ctrl = mc.circle(n=ctrlname, r=ctrl_scale, normal=(0, 1, 0))[0]
         grp = mc.group(ctrl, n=grpname)
 
         if createXtra_grp:

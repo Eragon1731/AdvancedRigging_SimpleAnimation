@@ -21,30 +21,25 @@ class Flower:
         self.all_joints = []
 
         '''get the position of the bulb'''
-        self.position = mc.getAttr(bulb + ".translate")
+        self.pos = mc.getAttr(bulb + ".translate")
 
 
     # Determines how many petals are in each row and how many rows there are. Also sets the angle and position of
     # petals relative to the bulb
     def organiseFlowerPetals(self):
 
-        print "init: ", self.petal
-
         joints = [x for x in mc.listRelatives(self.petal, ad=True) if "petal_joint" in x]
         joints.reverse()
 
-        print "joints ", joints
-
         '''track all parent joints'''
-        petals = [self.petal]
-        all_joints = [joints]
-
-        curr_num = self.base_petals
+        petals = []
+        all_joints = []
 
         '''create all the petals in for each row'''
         for j in range(self.rows):
 
-            curr_num += 1
+            curr_num = self.base_petals + j
+
             for i in range(curr_num):
                 '''keep track of all the petals in a single row with temporary array'''
                 base_petals = []
@@ -52,7 +47,6 @@ class Flower:
                 '''duplicate and arrange petals into groups to manipulate later'''
                 temp_petal = mc.duplicate(self.petal, rc=True)
 
-                print "what is temp: ", temp_petal
                 '''track each petal'''
                 curr_petal = [x for x in temp_petal if self.petal[0] in x]
 
@@ -66,15 +60,10 @@ class Flower:
 
 
             '''track all the petal joints in each row so User can adjust by row'''
-            self.petal_layers["Row at "+str(j)]=  base_petals
-
-        print "petal_layers ", self.petal_layers
+            self.petal_layers["Row at "+str(j)] = base_petals
 
         self.all_petals = petals
-        self.all_joints = joints
-
-        print "all p: ", self.all_petals
-        print "all jnt: ", self.all_joints
+        self.all_joints = all_joints
 
 
     # This function organises the petals around the bulb. The User chooses how petal layers they want,
@@ -87,15 +76,27 @@ class Flower:
         for j in range(self.rows):
 
             next_count = curr_count + self.rows + j
+
+            print "from: ", curr_count, "to: ", next_count
+
             for i in range(curr_count, next_count):
+
                 if i < len(self.all_petals):
-                    mc.rotate(0, (360 / self.rows) * i, 0, self.all_petals[i], r=True, fo=True, os=True)
-                    mc.move(self.position[0][0], self.position[0][1], self.position[0][2] + (j * offset), self.all_petals[i], os=True, wd=True, r=True)
+
+                    '''print checks'''
+                    #print "angle of petal is: ", (360 / (self.rows+j)) * i, " at index: ",i
+
+                    mc.rotate(0, (360 / (self.rows+j)) * i, 0, self.all_petals[i], r=True, fo=True, os=True)
+                    mc.move(self.pos[0][0] - (j * offset), self.pos[0][1], self.pos[0][2], self.all_petals[i], r=True,
+                            wd=True, os=True)
 
                     mc.bindSkin(self.all_petals[i], self.all_joints[i])
 
                     '''create the spine rigs for each petal'''
                     AdvancedRigging.createLinearSpineControllers(self.all_joints[i], ctrl_scale=1, createXtra_grp=False)
+
+                else:
+                    break
 
             curr_count = next_count
 
