@@ -1,44 +1,125 @@
 import maya.cmds as mc
-import os
 import AdvancedRigging
 
-#Create the bulb by importing a bulb type from default lib
-#path : "/Users/christyye/Documents/maya/projects/Advanced_Rigging/bulb_default.fbx "
-def createBulb(path):
-
-    mc.file(path, i=True)
-
-    '''create a loc for bulb'''
-    dir_path = os.path.basename(os.path.normpath(path)).split(".")[0]
-
-    object = mc.ls(dir_path)
-    AdvancedRigging.createCenterLocatorController(object, orient=False)
+PETAL_ROWS = []
 
 
-#Create a single petal by importing a petal type from default lib
-#testing default is : "/Users/christyye/Documents/maya/projects/Advanced_Rigging/petal_default.fbx "
-def createPetal(path):
+class Flower:
 
-    mc.file(path, i=True)
+    # This constructor sets the type of petal and bulb and the num of rows a flower has
+    def __init__(self, petal, bulb, rows, base_petals):
+        self.petal = mc.ls(petal)
+        self.bulb = mc.ls(bulb)
+        self.rows = rows
+        self.base_petals = base_petals
 
-    '''find the petal in the scene'''
-    dir_path = os.path.basename(os.path.normpath(path)).split(".")[0]
-    object = mc.ls(dir_path)
+        '''dict for moving petals in position'''
+        self.petal_layers = {}
 
-    '''get all the meshes and joints in the petal'''
-    children = mc.listRelatives(object, ad=True)[:-1]
+        '''dict for rigging all petals'''
+        self.all_petals = []
+        self.all_joints = []
 
-    joints = []
-    meshes = []
+        '''get the position of the bulb'''
+        self.position = mc.getAttr(bulb + ".translate")
 
-    '''separate the children in meshes and joints'''
-    for i in range(len(children)):
-        print mc.objectType(children[i])
-        if mc.objectType(children[i]) == "joint":
-            mc.rename(children[i], "petal_joint_" + str(i))
-            joints.append(children[i])
-        elif mc.objectType(children[i]) == "mesh":
-            mc.rename(children[i], "petal_geo" + str(i))
-            meshes.append(children[i])
 
-    return joints, meshes
+    # Determines how many petals are in each row and how many rows there are. Also sets the angle and position of
+    # petals relative to the bulb
+    def organiseFlowerPetals(self):
+
+        print "init: ", self.petal
+
+        joints = [x for x in mc.listRelatives(self.petal, ad=True) if "petal_joint" in x]
+        joints.reverse()
+
+        print "joints ", joints
+
+        '''track all parent joints'''
+        petals = [self.petal]
+        all_joints = [joints]
+
+        curr_num = self.base_petals
+
+        '''create all the petals in for each row'''
+        for j in range(self.rows):
+
+            curr_num += 1
+            for i in range(curr_num):
+                '''keep track of all the petals in a single row with temporary array'''
+                base_petals = []
+
+                '''duplicate and arrange petals into groups to manipulate later'''
+                temp_petal = mc.duplicate(self.petal, rc=True)
+
+                print "what is temp: ", temp_petal
+                '''track each petal'''
+                curr_petal = [x for x in temp_petal if self.petal[0] in x]
+
+                petals.append(curr_petal)
+                base_petals.append(curr_petal)
+
+                '''track all the joints in each petal'''
+                temp_jnts = [x for x in mc.listRelatives(temp_petal, ad=True) if "petal_joint" in x]
+                temp_jnts.reverse()
+                all_joints.append(temp_jnts)
+
+
+            '''track all the petal joints in each row so User can adjust by row'''
+            self.petal_layers["Row at "+str(j)]=  base_petals
+
+        print "petal_layers ", self.petal_layers
+
+        self.all_petals = petals
+        self.all_joints = joints
+
+        print "all p: ", self.all_petals
+        print "all jnt: ", self.all_joints
+
+
+    # This function organises the petals around the bulb. The User chooses how petal layers they want,
+    # how many petals in the first layer, how many more petals for each ascending layer.
+    def movePetalsAroundBulb(self, offset=1):
+
+        curr_count = 0
+
+        '''distance and rotate the petals around the bulb for each row of petals'''
+        for j in range(self.rows):
+
+            next_count = curr_count + self.rows + j
+            for i in range(curr_count, next_count):
+                if i < len(self.all_petals):
+                    mc.rotate(0, (360 / self.rows) * i, 0, self.all_petals[i], r=True, fo=True, os=True)
+                    mc.move(self.position[0][0], self.position[0][1], self.position[0][2] + (j * offset), self.all_petals[i], os=True, wd=True, r=True)
+
+                    mc.bindSkin(self.all_petals[i], self.all_joints[i])
+
+                    '''create the spine rigs for each petal'''
+                    AdvancedRigging.createLinearSpineControllers(self.all_joints[i], ctrl_scale=1, createXtra_grp=False)
+
+            curr_count = next_count
+
+
+
+
+    # This function adjusts the position and angle of a row of petals.
+    def adjustPetalRowTransform(row_index=0, pos_offset=(0, 0, 0), angle=45, axis="Y"):
+
+        """for a selected row of petals, adjust the initial state"""
+        curr_row = PETAL_ROWS[row_index]
+
+        '''move petals in the row to new position and angle'''
+        for petal in curr_row:
+            mc.setAttr(petal + ".rotate" + axis, 0, angle, 0, type="double3")
+            mc.rotate(0, angle, 0, petal, os=True)
+            mc.move(pos_offset[0], pos_offset[1], pos_offset[2], petal, os=True, r=True)
+
+
+    # This function adjusts the position and rotation of a single petal. Petal must be selected in the scene.
+    def adjustSinglePetalTransform(petal=None, bend=1, axis="Y"):
+
+        """get the selected petal"""
+        if petal is None:
+            petal = mc.ls(sl=True)
+
+        petal.setAttr(petal + ".rotate" + axis, bend)
