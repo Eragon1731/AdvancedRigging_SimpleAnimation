@@ -1,5 +1,6 @@
 import maya.cmds as mc
 import Utils
+from Flower import Flower
 
 # This function create keyframes that will bend a petal on an single axis. The User can adjust the frequency
 # of keyframes, the time of animation, the axis the petal bends on and the angle the petal bends at.
@@ -24,27 +25,22 @@ def animatePetals(ctrls=None, frequency=5, time=120, axis="Z", curr_bend=1, bend
         curr_bend += bend_speed
 
 
-# This function orders all petal joints in a recognizable format. Used for custom petals
-def orderPetalJoints(parent, children):
-
-    petal_jnt = []
-
-    for i in range(len(children)):
-        petal_jnt.append(children[i])
-    petal_jnt.append(parent)
-    petal_jnt.reverse()
-
-    return petal_jnt
+# This function re-animates the selected Petals
+def changeRowAnimation(flower, row=1, frequency=5, time=120, axis="Z", curr_bend=1, bend_speed=0.5):
 
 
-# This function renames the petal geo and joints in recognizable format. Used for custom petals
-def renamePetalChildren(jnts, separator, suffix):
+    """get the petals in a row to re-animate for a specific flower"""
+    petals = flower.petal_layers["Row at "+str(row)]
 
-    new_names = []
-    for i in range(len(jnts)):
-        temp = Utils.addSuffix(jnts[i], separator=separator, suffix=suffix)
-        new_names.append(temp)
+    group = []
 
-    return new_names
+    """for each parent joint in the petals list, find it's group"""
+    for i in petals:
+        temp = [x for x in i if "_grp" in x]
+        print "temp: ", temp
+        group.append([x for x in i if "_grp" in x])
+
+
+
 
 

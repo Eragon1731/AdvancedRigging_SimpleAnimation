@@ -6,6 +6,10 @@ PETAL_ROWS = []
 
 class Flower:
 
+    # This is an empty instance of the Flower Class. Can only be used for assignment
+    def __init__(self):
+        pass
+
     # This constructor sets the type of petal and bulb and the num of rows a flower has
     def __init__(self, petal, bulb, rows, base_petals):
         self.petal = mc.ls(petal)
@@ -40,9 +44,10 @@ class Flower:
 
             curr_num = self.base_petals + j
 
+            '''keep track of all the petals in a single row with temporary array'''
+            base_petals = []
+
             for i in range(curr_num):
-                '''keep track of all the petals in a single row with temporary array'''
-                base_petals = []
 
                 '''duplicate and arrange petals into groups to manipulate later'''
                 temp_petal = mc.duplicate(self.petal, rc=True)
@@ -51,19 +56,23 @@ class Flower:
                 curr_petal = [x for x in temp_petal if self.petal[0] in x]
 
                 petals.append(curr_petal)
-                base_petals.append(curr_petal)
 
                 '''track all the joints in each petal'''
                 temp_jnts = [x for x in mc.listRelatives(temp_petal, ad=True) if "petal_joint" in x]
                 temp_jnts.reverse()
                 all_joints.append(temp_jnts)
 
+                base_petals.append(temp_jnts[0])
+                print "base petals: ", base_petals, "at: ", i
 
             '''track all the petal joints in each row so User can adjust by row'''
             self.petal_layers["Row at "+str(j)] = base_petals
 
         self.all_petals = petals
         self.all_joints = all_joints
+
+        '''delete the original petal when the Flower is done'''
+        mc.delete(mc.ls(self.petal[0]))
 
 
     # This function organises the petals around the bulb. The User chooses how petal layers they want,
@@ -83,9 +92,6 @@ class Flower:
 
                 if i < len(self.all_petals):
 
-                    '''print checks'''
-                    #print "angle of petal is: ", (360 / (self.rows+j)) * i, " at index: ",i
-
                     mc.rotate(0, (360 / (self.rows+j)) * i, 0, self.all_petals[i], r=True, fo=True, os=True)
                     mc.move(self.pos[0][0] - (j * offset), self.pos[0][1], self.pos[0][2], self.all_petals[i], r=True,
                             wd=True, os=True)
@@ -100,21 +106,21 @@ class Flower:
 
             curr_count = next_count
 
-
-
-
     # This function adjusts the position and angle of a row of petals.
-    def adjustPetalRowTransform(row_index=0, pos_offset=(0, 0, 0), angle=45, axis="Y"):
+    def adjustPetalRowTransform(self, row_index=0, pos_offset=(0, 0, 0), angle=45, axis="Y"):
 
         """for a selected row of petals, adjust the initial state"""
-        curr_row = PETAL_ROWS[row_index]
+        curr_row = self.petal_layers["Row at "+str(row_index)]
+
+        print "curr row: ", curr_row
 
         '''move petals in the row to new position and angle'''
         for petal in curr_row:
-            mc.setAttr(petal + ".rotate" + axis, 0, angle, 0, type="double3")
+            print petal
+
+            mc.setAttr(petal + "_grp.rotate" + axis, 0, angle, 0, type="double3")
             mc.rotate(0, angle, 0, petal, os=True)
             mc.move(pos_offset[0], pos_offset[1], pos_offset[2], petal, os=True, r=True)
-
 
     # This function adjusts the position and rotation of a single petal. Petal must be selected in the scene.
     def adjustSinglePetalTransform(petal=None, bend=1, axis="Y"):
@@ -122,5 +128,8 @@ class Flower:
         """get the selected petal"""
         if petal is None:
             petal = mc.ls(sl=True)
+
+        if petal is None:
+            mc.warning("Select the petal grp to mainipulate")
 
         petal.setAttr(petal + ".rotate" + axis, bend)

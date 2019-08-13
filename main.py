@@ -30,6 +30,10 @@ def StepThree():
 
 
 
-def adjustPetals(case):
+def adjustPetals(flower, func):
+    return {
+        "adjustPetalRowTransform": flower.adjustPetalRowTransform(),
+        "adjustSinglePetalTransform": flower.adjustSinglePetalTransform(),
+        "changeRowAnimation": FlowerAnimation.changeRowAnimation(flower)
+    }[func]
 
-    if case
