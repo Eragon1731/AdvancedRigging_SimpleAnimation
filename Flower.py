@@ -1,8 +1,6 @@
 import maya.cmds as mc
 import AdvancedRigging
 
-PETAL_ROWS = []
-
 
 class Flower:
 
@@ -112,13 +110,13 @@ class Flower:
         """for a selected row of petals, adjust the initial state"""
         curr_row = self.petal_layers["Row at "+str(row_index)]
 
-        print "curr row: ", curr_row
+        print "change"
 
         '''move petals in the row to new position and angle'''
         for petal in curr_row:
             print petal
 
-            mc.setAttr(petal + "_grp.rotate" + axis, 0, angle, 0, type="double3")
+            mc.setAttr(petal + "_grp.rotate", 0, angle, 0, type="double3")
             mc.rotate(0, angle, 0, petal, os=True)
             mc.move(pos_offset[0], pos_offset[1], pos_offset[2], petal, os=True, r=True)
 
@@ -132,4 +130,4 @@ class Flower:
         if petal is None:
             mc.warning("Select the petal grp to mainipulate")
 
-        petal.setAttr(petal + ".rotate" + axis, bend)
+        mc.setAttr(petal + ".rotate" + axis, bend)

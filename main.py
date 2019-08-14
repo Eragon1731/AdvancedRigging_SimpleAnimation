@@ -31,9 +31,11 @@ def StepThree():
 
 
 def adjustPetals(flower, func):
-    return {
+    switcher = {
         "adjustPetalRowTransform": flower.adjustPetalRowTransform(),
         "adjustSinglePetalTransform": flower.adjustSinglePetalTransform(),
         "changeRowAnimation": FlowerAnimation.changeRowAnimation(flower)
-    }[func]
+    }
+
+    return switcher[func]
 
