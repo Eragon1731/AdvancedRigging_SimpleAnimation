@@ -7,7 +7,7 @@ import os
 
 print "In main.py"
 
-#Step 1: Load the models
+# Step 1: Load the models
 def StepOne(bulb="bulb_default", petal="petal_default"):
 
     """find the relative paths to the models and load them"""
@@ -20,7 +20,7 @@ def StepOne(bulb="bulb_default", petal="petal_default"):
     ImportFlower.createBulb(bulb_path)
     ImportFlower.createPetal(petal_path)
 
-#Step 2: Move Petals in place. Specify name of the parent petal joint, petal geo name, and bulb locator name in this order
+# Step 2: Move Petals in place. Specify name of the parent petal joint, petal geo name, and bulb locator name in this order
 def StepTwo(petal_name, bulb_name, petal_rows=1, base_petals=3):
 
     """create an Flower instance so each flower as a unique set attributes"""
@@ -32,12 +32,12 @@ def StepTwo(petal_name, bulb_name, petal_rows=1, base_petals=3):
 
     return lotus_flower
 
-#Step 3: Rig and Animation petal joints in Flower. Select the petal groups to animate
+# Step 3: Rig and Animation petal joints in Flower. Select the petal groups to animate
 def StepThree():
     FlowerAnimation.animatePetals()
 
 
-#Optional: Edit the form and animations of a created Flower object. Specify the flower object
+# Optional: Edit the form and animations of a created Flower object. Specify the flower object
 # to change and the type edit
 def editPetals(flower, edit):
     switcher = {
