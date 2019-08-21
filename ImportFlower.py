@@ -1,11 +1,15 @@
 import maya.cmds as mc
 import os
 import AdvancedRigging
+reload(AdvancedRigging)
 
 #Create the bulb by importing a bulb type from default lib
 #path : "/Users/christyye/Documents/maya/projects/Advanced_Rigging/bulb_default.fbx "
 def createBulb(path):
+    """
 
+    :rtype:
+    """
     mc.file(path, i=True)
 
     '''create a loc for bulb'''

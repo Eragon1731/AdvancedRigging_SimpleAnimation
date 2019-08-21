@@ -1,20 +1,23 @@
 import maya.cmds as mc
-import Utils
 from Flower import Flower
 
-# This function create keyframes that will bend a petal on an single axis. The User can adjust the frequency
+# This function create keyframes that will bend a petal on an single axis. The User can define the frequency
 # of keyframes, the time of animation, the axis the petal bends on and the angle the petal bends at.
 def animatePetals(ctrls=None, frequency=5, time=120, axis="Z", curr_bend=1, bend_speed=0.5):
 
+    """get the list of all joints for each petal"""
     if ctrls is None:
         temp = mc.ls(sl=True)
         ctrls = [x for x in mc.listRelatives(temp, ad=True, type="transform") if "_ctrl" in x]
 
+    """temp container to store all ctrls"""
     all_ctrls = []
 
+    """get every joint in all the petals"""
     for i in range(len(ctrls)):
         all_ctrls.append(ctrls[i])
 
+    """rotate and keyframe all joints within a set amount of time"""
     counter = frequency
     while counter < time:
         for i in range(len(all_ctrls)):
@@ -27,7 +30,6 @@ def animatePetals(ctrls=None, frequency=5, time=120, axis="Z", curr_bend=1, bend
 
 # This function re-animates the selected Petals
 def changeRowAnimation(flower, row=1, frequency=5, time=120, axis="Z", curr_bend=1, bend_speed=0.5):
-
 
     """get the petals in a row to re-animate for a specific flower"""
     petals = flower.petal_layers["Row at "+str(row)]

@@ -1,24 +1,22 @@
 import maya.cmds as mc
 import AdvancedRigging
-
+reload(AdvancedRigging)
 
 class Flower:
 
-    # This is an empty instance of the Flower Class. Can only be used for assignment
-    def __init__(self):
-        pass
-
-    # This constructor sets the type of petal and bulb and the num of rows a flower has
+    # This constructor sets the type of petal and bulb, and the amount of petal layers a flower has
     def __init__(self, petal, bulb, rows, base_petals):
+
+        """Sets the petal and bulb type. Also tracks num of rows and each root joint in every petal"""
         self.petal = mc.ls(petal)
         self.bulb = mc.ls(bulb)
         self.rows = rows
         self.base_petals = base_petals
 
-        '''dict for moving petals in position'''
+        '''dict to track each layer of petals'''
         self.petal_layers = {}
 
-        '''dict for rigging all petals'''
+        '''lists to track all petals and joints'''
         self.all_petals = []
         self.all_joints = []
 
@@ -30,6 +28,7 @@ class Flower:
     # petals relative to the bulb
     def organiseFlowerPetals(self):
 
+        """find all the joints in petal loaded into scene"""
         joints = [x for x in mc.listRelatives(self.petal, ad=True) if "petal_joint" in x]
         joints.reverse()
 
@@ -40,17 +39,19 @@ class Flower:
         '''create all the petals in for each row'''
         for j in range(self.rows):
 
+            """from the base petal num at the first layer, all layers contain one more petal than the previous"""
             curr_num = self.base_petals + j
 
             '''keep track of all the petals in a single row with temporary array'''
             base_petals = []
 
+            '''create all petals by duplicating loaded petal '''
             for i in range(curr_num):
 
                 '''duplicate and arrange petals into groups to manipulate later'''
                 temp_petal = mc.duplicate(self.petal, rc=True)
 
-                '''track each petal'''
+                '''find petal in the group duplicated'''
                 curr_petal = [x for x in temp_petal if self.petal[0] in x]
 
                 petals.append(curr_petal)
@@ -60,10 +61,10 @@ class Flower:
                 temp_jnts.reverse()
                 all_joints.append(temp_jnts)
 
+                '''track every root joint in each petal'''
                 base_petals.append(temp_jnts[0])
-                print "base petals: ", base_petals, "at: ", i
 
-            '''track all the petal joints in each row so User can adjust by row'''
+            '''organize all the petal joints by their petal layer/row so User can adjust by layer/row'''
             self.petal_layers["Row at "+str(j)] = base_petals
 
         self.all_petals = petals
@@ -77,6 +78,7 @@ class Flower:
     # how many petals in the first layer, how many more petals for each ascending layer.
     def movePetalsAroundBulb(self, offset=1):
 
+        '''counter to mark the range of petals to be included at each layer'''
         curr_count = 0
 
         '''distance and rotate the petals around the bulb for each row of petals'''
@@ -84,10 +86,9 @@ class Flower:
 
             next_count = curr_count + self.rows + j
 
-            print "from: ", curr_count, "to: ", next_count
-
             for i in range(curr_count, next_count):
 
+                '''make sure petal found is within max number of petals in flower. Else, end search'''
                 if i < len(self.all_petals):
 
                     mc.rotate(0, (360 / (self.rows+j)) * i, 0, self.all_petals[i], r=True, fo=True, os=True)
@@ -114,7 +115,6 @@ class Flower:
 
         '''move petals in the row to new position and angle'''
         for petal in curr_row:
-            print petal
 
             mc.setAttr(petal + "_grp.rotate", 0, angle, 0, type="double3")
             mc.rotate(0, angle, 0, petal, os=True)

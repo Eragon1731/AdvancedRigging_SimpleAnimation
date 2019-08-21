@@ -1,6 +1,7 @@
 import maya.cmds as mc
 import random as rand
 import AdvancedRigging
+reload(AdvancedRigging)
 
 #set up lantern distribution and spin animation
 def createLanternAnimation(selected=None):
