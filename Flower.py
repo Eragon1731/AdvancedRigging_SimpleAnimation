@@ -5,7 +5,9 @@ reload(AdvancedRigging)
 class Flower:
 
     # This constructor sets the type of petal and bulb, and the amount of petal layers a flower has
-    def __init__(self, petal, bulb, rows, base_petals):
+    def __init__(self,name, petal, bulb, rows, base_petals):
+
+        self.name = name
 
         """Sets the petal and bulb type. Also tracks num of rows and each root joint in every petal"""
         self.petal = mc.ls(petal)
@@ -19,6 +21,8 @@ class Flower:
         '''lists to track all petals and joints'''
         self.all_petals = []
         self.all_joints = []
+        self.all_grps = []
+        self.all_ctrls = []
 
         '''get the position of the bulb'''
         self.pos = mc.getAttr(bulb + ".translate")
@@ -98,7 +102,10 @@ class Flower:
                     mc.bindSkin(self.all_petals[i], self.all_joints[i])
 
                     '''create the spine rigs for each petal'''
-                    AdvancedRigging.createLinearSpineControllers(self.all_joints[i], ctrl_scale=1, createXtra_grp=False)
+                    grp, names = (AdvancedRigging.createLinearSpineControllers(self.all_joints[i], ctrl_scale=1, createXtra_grp=False))
+
+                    self.all_grps.append(grp)
+                    self.all_ctrls.append(names)
 
                 else:
                     break
@@ -131,3 +138,23 @@ class Flower:
             mc.warning("Select the petal grp to mainipulate")
 
         mc.setAttr(petal + ".rotate" + axis, bend)
+
+    # Updates flower components if the user deletes or renames flower
+    def updateFlower(self, petals, bulb, rows, base_petals):
+
+        self.all_petals = petals
+        self.bulb = bulb
+        self.rows = rows
+        self.base_petals = base_petals
+
+
+    def groupAllComponents(self):
+
+        grp = mc.group(em=True, name=self.name)
+        for group in self.all_grps:
+            mc.parent(group[0], grp)
+
+        print "grp is ", grp
+
+
+

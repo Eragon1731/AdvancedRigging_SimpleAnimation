@@ -43,6 +43,18 @@ def changeRowAnimation(flower, row=1, frequency=5, time=120, axis="Z", curr_bend
         group.append([x for x in i if "_grp" in x])
 
 
+# Clears all keyframes in all flower assets so User can reanimate petals
+def clearAllKeyFrames (root_grp, max_time=120, axis="Y"):
+
+    # get all children in the root group of all flower assets
+    children = root_grp.all_ctrls
+
+    print "children: ", children
+
+    #clear all keyframes
+    for child in children:
+        mc.cutKey(child, time=(0, max_time))
+        mc.makeIdentity(child, rotate=True)
 
 
 

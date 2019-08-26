@@ -46,7 +46,7 @@ def createLinearSpineControllers(fk_joints=None, ctrl_scale=CTRL_SCALE, createXt
     for i in range(1, len(grps)):
         mc.parent(grps[i], names[i - 1])
 
-    return names
+    return grps, names
 
 
 #Create controllers for all petal joints for rigging and animation

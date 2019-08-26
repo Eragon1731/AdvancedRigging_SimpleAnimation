@@ -18,6 +18,9 @@ def createBulb(path):
     object = mc.ls(dir_path)
     AdvancedRigging.createCenterLocatorController(object, orient=False)
 
+    """rename the bulb with a "_geo" to mark it as a model"""
+    #mc.rename(object, object[0]+"_geo")
+
 
 #Create a single petal by importing a petal type from default lib
 #testing default is : "/Users/christyye/Documents/maya/projects/Advanced_Rigging/petal_default.fbx "

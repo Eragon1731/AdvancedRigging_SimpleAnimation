@@ -5,8 +5,6 @@ reload(FlowerAnimation)
 from Flower import Flower
 import os
 
-print "In main.py"
-
 # Step 1: Load the models
 def StepOne(bulb="bulb_default", petal="petal_default"):
 
@@ -21,30 +19,20 @@ def StepOne(bulb="bulb_default", petal="petal_default"):
     ImportFlower.createPetal(petal_path)
 
 # Step 2: Move Petals in place. Specify name of the parent petal joint, petal geo name, and bulb locator name in this order
-def StepTwo(petal_name, bulb_name, petal_rows=1, base_petals=3):
+def StepTwo(name, petal_name, bulb_name, petal_rows=1, base_petals=3):
 
     """create an Flower instance so each flower as a unique set attributes"""
-    lotus_flower = Flower(petal=petal_name, bulb=bulb_name, rows=petal_rows, base_petals=base_petals)
+    lotus_flower = Flower(name=name, petal=petal_name, bulb=bulb_name, rows=petal_rows, base_petals=base_petals)
 
     """build the flower using the traits assigned to instance"""
     lotus_flower.organiseFlowerPetals()
     lotus_flower.movePetalsAroundBulb(offset=1)
 
+    lotus_flower.groupAllComponents()
     return lotus_flower
 
 # Step 3: Rig and Animation petal joints in Flower. Select the petal groups to animate
 def StepThree():
     FlowerAnimation.animatePetals()
 
-
-# Optional: Edit the form and animations of a created Flower object. Specify the flower object
-# to change and the type edit
-def editPetals(flower, edit):
-    switcher = {
-        "adjustPetalRowTransform": flower.adjustPetalRowTransform(),
-        "adjustSinglePetalTransform": flower.adjustSinglePetalTransform(),
-        "changeRowAnimation": FlowerAnimation.changeRowAnimation(flower)
-    }
-
-    return switcher[edit]
 
