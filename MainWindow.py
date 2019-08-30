@@ -3,10 +3,7 @@ reload(ImportFlower)
 import FlowerAnimation
 reload(FlowerAnimation)
 
-from FlowerMain import StepOne
-from FlowerMain import StepTwo
-from FlowerMain import StepThree
-from FlowerMain import clearKeyFramesForFlower
+import FlowerMain
 
 from maya import OpenMayaUI as omui
 from PySide2.QtCore import *
@@ -25,6 +22,7 @@ TAB03_TITLE = "Animate Flower"
 
 PETAL_NAME = ""
 BULB_NAME = ""
+
 
 class ExampleTab(QWidget):
     def __init__(self, layout_type, *args, **kwargs):
@@ -49,7 +47,7 @@ class ExampleTab(QWidget):
         petalNameBox = QLineEdit("lotus_petal")
 
         pybutton = QPushButton("Load")
-        pybutton.clicked.connect(lambda: StepOne(bulbNameBox.text(), petalNameBox.text()))
+        pybutton.clicked.connect(lambda: FlowerMain.StepOne(bulbNameBox.text(), petalNameBox.text()))
 
         layout.addWidget(bulbTitle)
         layout.addWidget(bulbNameBox)
@@ -67,7 +65,7 @@ class ExampleTab(QWidget):
         baseTitle = QLabel("Assign Base Petals")
         nameTitle = QLabel("Name the flower")
         petalTitle = QLabel("Petal Anim Model Name")
-        bulbTitle = QLabel("Bulb Anim Model Name")
+        bulbTitle = QLabel("Bulb Center Locator Name")
 
         # Use second tab to edit Flower Attrs
         petalRows = QSpinBox()
@@ -76,12 +74,12 @@ class ExampleTab(QWidget):
         basePetals.setValue(3)
         nameValue = QLineEdit()
         petalName = QLineEdit("lotus_petal")
-        bulbName = QLineEdit("lotus_bulb_geo")
+        bulbName = QLineEdit("lotus_bulb_loc")
 
         button = QPushButton("Ok")
 
-        button.clicked.connect(lambda: StepTwo(nameValue.text(), petalName.text(),
-                                               bulbName.text(), petalRows.value(), basePetals.value()))
+        button.clicked.connect(lambda: FlowerMain.StepTwo(nameValue.text(), petalName.text(),
+                                                bulbName.text(), petalRows.value(), basePetals.value()))
 
         # Add widgets to layout
         layout.addWidget(nameTitle)
@@ -101,6 +99,7 @@ class ExampleTab(QWidget):
 
     def layout03(self):
         layout = QVBoxLayout()
+        intValidator = QIntValidator()
 
         # Default animation for flower
         timeTitle = QLabel("Animation Time Length")
@@ -112,7 +111,9 @@ class ExampleTab(QWidget):
         timeBox.setRange(0, 240)
         timeBox.setValue(120)
         frequencyBox = QLineEdit()
-        frequencyBox.setValidator(QIntValidator())
+
+        frequencyBox.setValidator(intValidator)
+
         axisBox = QComboBox()
         axisBox.addItems(["X", "Y", "Z"])
         speedBox = QSpinBox()
@@ -120,17 +121,22 @@ class ExampleTab(QWidget):
 
         animateInstructions = QLabel("Select the ctrl group(s) you want to animate with")
         animateButton = QPushButton("Animate the Flower Blooming")
-        animateButton.clicked.connect(lambda: StepThree())
+        animateButton.clicked.connect(lambda: FlowerMain.StepThree(int(frequencyBox.text()), timeBox.value(),
+                                                                   axisBox.currentText(), 1, 0.5))
 
         # All edits that can be made on a flower
         clearButton = QPushButton("Clear Keyframes")
+        clearTextTitle = QLabel("Name of flower to clear keyframes on")
         clearText = QLineEdit()
-        clearButton.clicked.connect(lambda: clearKeyFramesForFlower(clearText.text()))
+        clearButton.clicked.connect(lambda: FlowerMain.clearKeyFramesForFlower(clearText.text(), timeBox.value()))
 
-        numRows = QLineEdit().setValidator(QIntValidator())
+        numRowsTitle = QLabel("Which row num do you want to spin: ")
+        numRows = QLineEdit()
+        numRows.setValidator(intValidator)
         spinButton = QPushButton("Spin the Flower")
+        spinTextTitle = QLabel("Name of flower to spin")
         spinText = QLineEdit()
-        spinButton.clicked.connect(lambda: main.spinFlowerForFlower(spinText.text(), numRows.value()))
+        spinButton.clicked.connect(lambda: FlowerMain.spinFlowerForFlower(spinText.text(), int(numRows.text())))
 
         layout.addWidget(timeTitle)
         layout.addWidget(timeBox)
@@ -143,23 +149,17 @@ class ExampleTab(QWidget):
         layout.addWidget(animateInstructions)
         layout.addWidget(animateButton)
 
+        layout.addWidget(clearTextTitle)
         layout.addWidget(clearText)
         layout.addWidget(clearButton)
 
+        layout.addWidget(numRowsTitle)
         layout.addWidget(numRows)
+        layout.addWidget(spinTextTitle)
         layout.addWidget(spinText)
         layout.addWidget(spinButton)
 
         return layout
-
-    # Test functions
-    # def build_flower(self, name, petalName, bulbName, petalRows, basePetals):
-    #     StepTwo(name, petalName, bulbName, petalRows, basePetals)
-    #     PETAL_NAME = name
-    #     BULB_NAME = name
-
-    def on_click_button(self, val):
-        print "build a spine with %s joints" %(val)
 
 
 class MainWindow(QTabWidget):
@@ -173,7 +173,6 @@ class MainWindow(QTabWidget):
 
     def init_ui(self):
         self.setWindowTitle(WIN_TITLE)
-        main_layout = QGridLayout()
         self.setLayout(QGridLayout())
 
         #create a tab for each category of functionality

@@ -24,6 +24,7 @@ def StepOne(bulb, petal):
     else:
         mc.warning("Bulb and Petal names are not defined")
 
+
 # Step 2: Move Petals in place. Specify name of the parent petal joint, petal geo name, and bulb locator name in this order
 def StepTwo(name, petal_name, bulb_name, petal_rows=1, base_petals=3):
 
@@ -38,19 +39,24 @@ def StepTwo(name, petal_name, bulb_name, petal_rows=1, base_petals=3):
 
     FLOWER_INSTANCES.update({name: lotus_flower})
 
+    return lotus_flower
 
 # Step 3: Rig and Animation petal joints in Flower. Select the petal groups to animate
-def StepThree():
-    FlowerAnimation.animatePetals()
+def StepThree(frequency, time, axis, init_bend, speed):
+
+    FlowerAnimation.animatePetals(frequency=frequency, time=time, axis=axis, curr_bend=init_bend, bend_speed=speed)
 
 
 def clearKeyFramesForFlower(name, time=120):
 
     flower = FLOWER_INSTANCES.get(name)
+    print flower
     FlowerAnimation.clearAllKeyFrames(flower, max_time=time)
 
 
 def spinFlowerForFlower(name, numRows=1):
 
+    print FLOWER_INSTANCES
     flower = FLOWER_INSTANCES.get(name)
+    print flower
     FlowerAnimation.spinRowAnimation(flower, row_num=numRows)

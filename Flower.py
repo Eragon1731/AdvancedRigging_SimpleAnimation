@@ -27,9 +27,6 @@ class Flower:
         '''get the position of the bulb'''
         self.pos = mc.getAttr(bulb + ".translate")
 
-        # Track all instances of Flower Class
-        #Flower.instances.append(self)
-
     # Determines how many petals are in each row and how many rows there are. Also sets the angle and position of
     # petals relative to the bulb
     def organiseFlowerPetals(self):
@@ -71,7 +68,7 @@ class Flower:
                 base_petals.append(temp_jnts[0])
 
             '''organize all the petal joints by their petal layer/row so User can adjust by layer/row'''
-            self.petal_layers["Row at "+str(j)] = base_petals
+            self.petal_layers[str(j)] = base_petals
 
         self.all_petals = petals
         self.all_joints = all_joints
@@ -115,31 +112,32 @@ class Flower:
             curr_count = next_count
 
     # This function adjusts the position and angle of a row of petals.
-    def adjustPetalRowTransform(self, row_index=0, pos_offset=(0, 0, 0), angle=45, axis="Y"):
+    # def adjustPetalRowTransform(self, row_index=0, pos_offset=(0, 0, 0), angle=45, axis="Y"):
+    #
+    #     """for a selected row of petals, adjust the initial state"""
+    #     curr_row = self.petal_layers["Row at "+str(row_index)]
+    #
+    #     print "change"
+    #
+    #     '''move petals in the row to new position and angle'''
+    #     for petal in curr_row:
+    #
+    #         mc.setAttr(petal + "_grp.rotate", 0, angle, 0, type="double3")
+    #         mc.rotate(0, angle, 0, petal, os=True)
+    #         mc.move(pos_offset[0], pos_offset[1], pos_offset[2], petal, os=True, r=True)
+    #
+    # # This function adjusts the position and rotation of a single petal. Petal must be selected in the scene.
+    # def adjustSinglePetalTransform(petal=None, bend=1, axis="Y"):
+    #
+    #     """get the selected petal"""
+    #     if petal is None:
+    #         petal = mc.ls(sl=True)
+    #
+    #     if petal is None:
+    #         mc.warning("Select the petal grp to mainipulate")
+    #
+    #     mc.setAttr(petal + ".rotate" + axis, bend)
 
-        """for a selected row of petals, adjust the initial state"""
-        curr_row = self.petal_layers["Row at "+str(row_index)]
-
-        print "change"
-
-        '''move petals in the row to new position and angle'''
-        for petal in curr_row:
-
-            mc.setAttr(petal + "_grp.rotate", 0, angle, 0, type="double3")
-            mc.rotate(0, angle, 0, petal, os=True)
-            mc.move(pos_offset[0], pos_offset[1], pos_offset[2], petal, os=True, r=True)
-
-    # This function adjusts the position and rotation of a single petal. Petal must be selected in the scene.
-    def adjustSinglePetalTransform(petal=None, bend=1, axis="Y"):
-
-        """get the selected petal"""
-        if petal is None:
-            petal = mc.ls(sl=True)
-
-        if petal is None:
-            mc.warning("Select the petal grp to mainipulate")
-
-        mc.setAttr(petal + ".rotate" + axis, bend)
 
     def groupAllComponents(self):
 
