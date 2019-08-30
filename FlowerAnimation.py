@@ -10,6 +10,9 @@ def animatePetals(ctrls=None, frequency=5, time=120, axis="Z", curr_bend=1, bend
         temp = mc.ls(sl=True)
         ctrls = [x for x in mc.listRelatives(temp, ad=True, type="transform") if "_ctrl" in x]
 
+    if ctrls is None:
+        mc.warning("Please select the ctrls groups!")
+
     """temp container to store all ctrls"""
     all_ctrls = []
 
@@ -28,33 +31,44 @@ def animatePetals(ctrls=None, frequency=5, time=120, axis="Z", curr_bend=1, bend
         curr_bend += bend_speed
 
 
-# This function re-animates the selected Petals
-def changeRowAnimation(flower, row=1, frequency=5, time=120, axis="Z", curr_bend=1, bend_speed=0.5):
+# Spin the petals around the bulb's center. Spins all rows by default or specify a row to spin at.
+def spinRowAnimation(flower, row_num=1, frequency=5, time=120, spin_speed=0.5):
 
     """get the petals in a row to re-animate for a specific flower"""
-    petals = flower.petal_layers["Row at "+str(row)]
+    petals = flower.petal_layers["Row at "+str(row_num)]
 
     group = []
 
     """for each parent joint in the petals list, find it's group"""
-    for i in petals:
-        temp = [x for x in i if "_grp" in x]
-        print "temp: ", temp
-        group.append([x for x in i if "_grp" in x])
+    print "petals in 1: ", petals
 
 
 # Clears all keyframes in all flower assets so User can reanimate petals
-def clearAllKeyFrames (root_grp, max_time=120, axis="Y"):
+def clearAllKeyFrames (flower, max_time=120):
+
+    #check to see if User deleted or renamed ctrls
+    for i in range(len(flower.all_ctrls)):
+        print "range:", range(len(flower.all_ctrls))
+        if not mc.objExists(flower.all_ctrls[i][0]):
+            print "ctrl name: ", flower.all_ctrls[i][0]
+            del flower.all_ctrls[i]
+
+    #check new flower.allctrls
+    for f in flower.all_ctrls:
+        print f[0]
 
     # get all children in the root group of all flower assets
-    children = root_grp.all_ctrls
-
-    print "children: ", children
+    children = flower.all_ctrls
 
     #clear all keyframes
-    for child in children:
-        mc.cutKey(child, time=(0, max_time))
-        mc.makeIdentity(child, rotate=True)
+    for i in range(len(children)):
+        mc.cutKey(children[i], time=(0, max_time))
+        mc.makeIdentity(children[i], rotate=True)
 
+def findJointParent(ctrl_name):
 
+    jnt_name = ctrl_name[:-5]
+    par_name = mc.listRelatives(jnt_name, p=True)
 
+    par = mc.ls(par_name)
+    del par

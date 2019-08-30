@@ -2,8 +2,11 @@ import ImportFlower
 reload(ImportFlower)
 import FlowerAnimation
 reload(FlowerAnimation)
-from Flower import Flower
-import os
+
+from FlowerMain import StepOne
+from FlowerMain import StepTwo
+from FlowerMain import StepThree
+from FlowerMain import clearKeyFramesForFlower
 
 from maya import OpenMayaUI as omui
 from PySide2.QtCore import *
@@ -17,9 +20,11 @@ MAYA_MAIN_WINDOW = wrapInstance(long(mayaMainWindowPtr), QWidget)
 
 WIN_TITLE = "Flower Animation"
 TAB01_TITLE = "Load Assets"
-TAB02_TITLE = "Animation Attributes"
-TAB03_TITLE = "Edit Animation"
+TAB02_TITLE = "Build Flower Attributes"
+TAB03_TITLE = "Animate Flower"
 
+PETAL_NAME = ""
+BULB_NAME = ""
 
 class ExampleTab(QWidget):
     def __init__(self, layout_type, *args, **kwargs):
@@ -38,19 +43,13 @@ class ExampleTab(QWidget):
         layout = QVBoxLayout()
 
         #Load the flower parts: Allow users to add their flower parts to the list
-        bulbTitle = QLabel(self)
-        bulbTitle.setText('Bulb Name:')
-        bulbNameBox = QLineEdit(self)
-        bulbNameBox.setText('lotus_bulb')
+        bulbTitle = QLabel("Bulb Name:")
+        bulbNameBox = QLineEdit("lotus_bulb")
+        petalTitle = QLabel("Petal Name:")
+        petalNameBox = QLineEdit("lotus_petal")
 
-        petalTitle = QLabel(self)
-        petalTitle.setText('Petal Name:')
-        petalNameBox = QLineEdit(self)
-        petalNameBox.setText('lotus_petal')
-
-        pybutton = QPushButton('Load', self)
-        pybutton.clicked.connect(lambda: self.on_click_button(bulbNameBox.text()))
-        pybutton.clicked.connect(lambda: self.on_click_button(petalNameBox.text()))
+        pybutton = QPushButton("Load")
+        pybutton.clicked.connect(lambda: StepOne(bulbNameBox.text(), petalNameBox.text()))
 
         layout.addWidget(bulbTitle)
         layout.addWidget(bulbNameBox)
@@ -64,30 +63,50 @@ class ExampleTab(QWidget):
     def layout02(self):
         layout = QVBoxLayout()
 
-        petalTitle = QLabel()
-        baseTitle = QLabel()
-        petalTitle.setText("Assign Petal Rows")
-        baseTitle.setText("Assign Base Petals")
+        rowsTitle = QLabel("Assign Petal Rows")
+        baseTitle = QLabel("Assign Base Petals")
+        nameTitle = QLabel("Name the flower")
+        petalTitle = QLabel("Petal Anim Model Name")
+        bulbTitle = QLabel("Bulb Anim Model Name")
 
         # Use second tab to edit Flower Attrs
         petalRows = QSpinBox()
+        petalRows.setValue(3)
         basePetals = QSpinBox()
+        basePetals.setValue(3)
+        nameValue = QLineEdit()
+        petalName = QLineEdit("lotus_petal")
+        bulbName = QLineEdit("lotus_bulb_geo")
 
-        button = QPushButton()
-        button.setText("Ok")
+        button = QPushButton("Ok")
 
-        button.clicked.connect(lambda: self.on_click_button(petalRows.value()))
-        button.clicked.connect(lambda: self.on_click_button(basePetals.value()))
+        button.clicked.connect(lambda: StepTwo(nameValue.text(), petalName.text(),
+                                               bulbName.text(), petalRows.value(), basePetals.value()))
 
-        #Create animation for the flower
-        timeTitle = QLabel()
-        timeTitle.setText("Animation Time Length")
-        frequencyTitle = QLabel()
-        frequencyTitle.setText("Keyframe frequency within Time Limit: ")
-        axisTitle = QLabel()
-        axisTitle.setText("Which axis to animate on: ")
-        speedTitle = QLabel()
-        speedTitle.setText("Speed of Animation: ")
+        # Add widgets to layout
+        layout.addWidget(nameTitle)
+        layout.addWidget(nameValue)
+        layout.addWidget(petalTitle)
+        layout.addWidget(petalName)
+        layout.addWidget(bulbTitle)
+        layout.addWidget(bulbName)
+        layout.addWidget(rowsTitle)
+        layout.addWidget(petalRows)
+        layout.addWidget(baseTitle)
+        layout.addWidget(basePetals)
+
+        layout.addWidget(button)
+
+        return layout
+
+    def layout03(self):
+        layout = QVBoxLayout()
+
+        # Default animation for flower
+        timeTitle = QLabel("Animation Time Length")
+        frequencyTitle = QLabel("Keyframe frequency within Time Limit: ")
+        axisTitle = QLabel("Which axis to animate on: ")
+        speedTitle = QLabel("Speed of Animation: ")
 
         timeBox = QSpinBox()
         timeBox.setRange(0, 240)
@@ -99,15 +118,19 @@ class ExampleTab(QWidget):
         speedBox = QSpinBox()
         speedBox.setRange(1, 20)
 
+        animateInstructions = QLabel("Select the ctrl group(s) you want to animate with")
+        animateButton = QPushButton("Animate the Flower Blooming")
+        animateButton.clicked.connect(lambda: StepThree())
 
-        animateButton = QPushButton()
-        animateButton.setText("Animate the Flower")
+        # All edits that can be made on a flower
+        clearButton = QPushButton("Clear Keyframes")
+        clearText = QLineEdit()
+        clearButton.clicked.connect(lambda: clearKeyFramesForFlower(clearText.text()))
 
-        layout.addWidget(petalTitle)
-        layout.addWidget(petalRows)
-        layout.addWidget(baseTitle)
-        layout.addWidget(basePetals)
-        layout.addWidget(button)
+        numRows = QLineEdit().setValidator(QIntValidator())
+        spinButton = QPushButton("Spin the Flower")
+        spinText = QLineEdit()
+        spinButton.clicked.connect(lambda: main.spinFlowerForFlower(spinText.text(), numRows.value()))
 
         layout.addWidget(timeTitle)
         layout.addWidget(timeBox)
@@ -117,34 +140,23 @@ class ExampleTab(QWidget):
         layout.addWidget(axisBox)
         layout.addWidget(speedTitle)
         layout.addWidget(speedBox)
+        layout.addWidget(animateInstructions)
         layout.addWidget(animateButton)
 
-        return layout
+        layout.addWidget(clearText)
+        layout.addWidget(clearButton)
 
-    def layout03(self):
-        layout = QVBoxLayout()
-
-        # All edits that can be made on a flower
-        runButton = QPushButton()
-        runButton.setText("Clear Keyframes")
-        runButton.clicked.connect(lambda: self.edit_assets(runButton.text()))
-
-        spinButton = QPushButton()
-        spinButton.setText("Spin the Flower")
-
-        # Moves flower according to locator attached to bulb
-        relocateButton = QPushButton()
-        relocateButton.setText("Update Flower Assets")
-
-        layout.addWidget(runButton)
+        layout.addWidget(numRows)
+        layout.addWidget(spinText)
         layout.addWidget(spinButton)
-        layout.addWidget(relocateButton)
 
         return layout
 
     # Test functions
-    def edit_assets(self,val):
-        print "FlowerAnimation.%s" %(val)
+    # def build_flower(self, name, petalName, bulbName, petalRows, basePetals):
+    #     StepTwo(name, petalName, bulbName, petalRows, basePetals)
+    #     PETAL_NAME = name
+    #     BULB_NAME = name
 
     def on_click_button(self, val):
         print "build a spine with %s joints" %(val)

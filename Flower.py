@@ -3,9 +3,9 @@ import AdvancedRigging
 reload(AdvancedRigging)
 
 class Flower:
-
+    #instances = []
     # This constructor sets the type of petal and bulb, and the amount of petal layers a flower has
-    def __init__(self,name, petal, bulb, rows, base_petals):
+    def __init__(self, name, petal, bulb, rows, base_petals):
 
         self.name = name
 
@@ -27,6 +27,8 @@ class Flower:
         '''get the position of the bulb'''
         self.pos = mc.getAttr(bulb + ".translate")
 
+        # Track all instances of Flower Class
+        #Flower.instances.append(self)
 
     # Determines how many petals are in each row and how many rows there are. Also sets the angle and position of
     # petals relative to the bulb
@@ -139,22 +141,11 @@ class Flower:
 
         mc.setAttr(petal + ".rotate" + axis, bend)
 
-    # Updates flower components if the user deletes or renames flower
-    def updateFlower(self, petals, bulb, rows, base_petals):
-
-        self.all_petals = petals
-        self.bulb = bulb
-        self.rows = rows
-        self.base_petals = base_petals
-
-
     def groupAllComponents(self):
 
-        grp = mc.group(em=True, name=self.name)
+        grp = mc.group(em=True, name=self.name + "_ctrlGrp")
         for group in self.all_grps:
             mc.parent(group[0], grp)
-
-        print "grp is ", grp
 
 
 
