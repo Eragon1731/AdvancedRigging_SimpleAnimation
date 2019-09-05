@@ -141,7 +141,7 @@ class Flower:
 
     def groupAllComponents(self):
 
-        grp = mc.group(em=True, name=self.name + "_ctrlGrp")
+        grp = mc.group(em=True, name=self.name + "_ctrlOuterGrp")
         for group in self.all_grps:
             mc.parent(group[0], grp)
 

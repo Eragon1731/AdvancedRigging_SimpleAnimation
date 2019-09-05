@@ -38,7 +38,7 @@ class ExampleTab(QWidget):
 
 
     def layout01(self):
-        layout = QVBoxLayout()
+        layout = QGridLayout()
 
         #Load the flower parts: Allow users to add their flower parts to the list
         bulbTitle = QLabel("Bulb Name:")
@@ -49,11 +49,11 @@ class ExampleTab(QWidget):
         pybutton = QPushButton("Load")
         pybutton.clicked.connect(lambda: FlowerMain.StepOne(bulbNameBox.text(), petalNameBox.text()))
 
-        layout.addWidget(bulbTitle)
-        layout.addWidget(bulbNameBox)
-        layout.addWidget(petalTitle)
-        layout.addWidget(petalNameBox)
-        layout.addWidget(pybutton)
+        layout.addWidget(bulbTitle,0,0)
+        layout.addWidget(bulbNameBox,0,1)
+        layout.addWidget(petalTitle,1,0)
+        layout.addWidget(petalNameBox,1,1)
+        layout.addWidget(pybutton, 2, 0, 1, 2)
 
         return layout
 
