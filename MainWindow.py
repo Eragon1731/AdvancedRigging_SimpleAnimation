@@ -122,24 +122,23 @@ class ExampleTab(QWidget):
         timeBox = QSpinBox()
         timeBox.setRange(0, 240)
         timeBox.setValue(120)
-        frequencyBox = QLineEdit()
-
-        frequencyBox.setValidator(intValidator)
+        frequencyBox = QSpinBox()
+        frequencyBox.setValue(5)
 
         axisBox = QComboBox()
         axisBox.addItems(["X", "Y", "Z"])
         speedBox = QSpinBox()
         speedBox.setRange(1, 20)
 
+
         animateButton = QPushButton("Animate Blooming")
-        animateButton.clicked.connect(lambda: FlowerMain.StepThree(nameText.text(), int(frequencyBox.text()), timeBox.value(),
-                                                                   axisBox.currentText(), 1, 0.5))
+        animateButton.clicked.connect(lambda: FlowerMain.StepThree(nameText.text(), frequencyBox.value(),
+                                                                   timeBox.value(), axisBox.currentText(), 1, 0.5))
 
         numRowsTitle = QLabel("Which row num do you want to spin: ")
-        numRows = QLineEdit()
-        numRows.setValidator(intValidator)
+        numRows = QSpinBox()
         spinButton = QPushButton("Animate Petals Spin")
-        spinButton.clicked.connect(lambda: FlowerMain.spinFlowerForFlower(nameText.text(), int(numRows.text())))
+        spinButton.clicked.connect(lambda: FlowerMain.spinFlowerForFlower(nameText.text(), numRows.value()))
 
         # All edits that can be made on a flower
         clearButton = QPushButton("Clear Keyframes")

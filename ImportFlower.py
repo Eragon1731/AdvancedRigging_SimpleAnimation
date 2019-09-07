@@ -39,7 +39,7 @@ def createPetal(path):
 
     '''separate the children in meshes and joints'''
     for i in range(len(children)):
-        print mc.objectType(children[i])
+
         if mc.objectType(children[i]) == "joint":
             mc.rename(children[i], "petal_joint_" + str(i))
             joints.append(children[i])
