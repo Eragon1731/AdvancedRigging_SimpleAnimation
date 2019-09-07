@@ -3,27 +3,26 @@ import os
 import AdvancedRigging
 reload(AdvancedRigging)
 
-#Create the bulb by importing a bulb type from default lib
-#path : "/Users/christyye/Documents/maya/projects/Advanced_Rigging/bulb_default.fbx "
+"""
+Create the bulb by importing a bulb type from default lib
+path : "/Users/christyye/Documents/maya/projects/Advanced_Rigging/bulb_default.fbx "
+"""
 def createBulb(path):
-    """
 
-    :rtype:
-    """
     mc.file(path, i=True)
 
-    '''create a loc for bulb'''
+    #create a loc for bulb
     dir_path = os.path.basename(os.path.normpath(path)).split(".")[0]
 
     object = mc.ls(dir_path)
     AdvancedRigging.createCenterLocatorController(object, orient=False)
 
-    """rename the bulb with a "_geo" to mark it as a model"""
-    #mc.rename(object, object[0]+"_geo")
 
 
-#Create a single petal by importing a petal type from default lib
-#testing default is : "/Users/christyye/Documents/maya/projects/Advanced_Rigging/petal_default.fbx "
+"""
+Create a single petal by importing a petal type from default lib
+testing default is : "/Users/christyye/Documents/maya/projects/Advanced_Rigging/petal_default.fbx "
+"""
 def createPetal(path):
 
     mc.file(path, i=True)

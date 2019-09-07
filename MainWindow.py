@@ -59,7 +59,9 @@ class ExampleTab(QWidget):
 
     '''create a default flower with default animation'''
     def layout02(self):
-        layout = QVBoxLayout()
+        layout = QGridLayout()
+        regex = QRegExp("[a-z-A-Z_]+")
+        validator = QRegExpValidator(regex)
 
         rowsTitle = QLabel("Assign Petal Rows")
         baseTitle = QLabel("Assign Base Petals")
@@ -73,8 +75,11 @@ class ExampleTab(QWidget):
         basePetals = QSpinBox()
         basePetals.setValue(3)
         nameValue = QLineEdit()
+        nameValue.setValidator(validator)
         petalName = QLineEdit("lotus_petal")
+        petalName.setValidator(validator)
         bulbName = QLineEdit("lotus_bulb_loc")
+        bulbName.setValidator(validator)
 
         button = QPushButton("Ok")
 
@@ -82,30 +87,37 @@ class ExampleTab(QWidget):
                                                 bulbName.text(), petalRows.value(), basePetals.value()))
 
         # Add widgets to layout
-        layout.addWidget(nameTitle)
-        layout.addWidget(nameValue)
-        layout.addWidget(petalTitle)
-        layout.addWidget(petalName)
-        layout.addWidget(bulbTitle)
-        layout.addWidget(bulbName)
-        layout.addWidget(rowsTitle)
-        layout.addWidget(petalRows)
-        layout.addWidget(baseTitle)
-        layout.addWidget(basePetals)
+        layout.addWidget(nameTitle, 0,0)
+        layout.addWidget(nameValue, 0,1)
+        layout.addWidget(petalTitle, 1,0)
+        layout.addWidget(petalName, 1,1)
+        layout.addWidget(bulbTitle, 2,0)
+        layout.addWidget(bulbName, 2,1)
+        layout.addWidget(rowsTitle, 3,0)
+        layout.addWidget(petalRows,3,1 )
+        layout.addWidget(baseTitle , 4,0)
+        layout.addWidget(basePetals, 4,1)
 
-        layout.addWidget(button)
+        layout.addWidget(button,5,0,1,2)
 
         return layout
 
     def layout03(self):
-        layout = QVBoxLayout()
+        layout = QGridLayout()
         intValidator = QIntValidator()
+        regex = QRegExp("[a-z-A-Z_]+")
+        validator = QRegExpValidator(regex)
 
         # Default animation for flower
         timeTitle = QLabel("Animation Time Length")
         frequencyTitle = QLabel("Keyframe frequency within Time Limit: ")
         axisTitle = QLabel("Which axis to animate on: ")
         speedTitle = QLabel("Speed of Animation: ")
+        animateInstructions = QLabel("Select the ctrl group(s) you want to animate with")
+
+        spinTextTitle = QLabel("Name of flower to animate/edit")
+        nameText = QLineEdit()
+        nameText.setValidator(validator)
 
         timeBox = QSpinBox()
         timeBox.setRange(0, 240)
@@ -119,45 +131,39 @@ class ExampleTab(QWidget):
         speedBox = QSpinBox()
         speedBox.setRange(1, 20)
 
-        animateInstructions = QLabel("Select the ctrl group(s) you want to animate with")
-        animateButton = QPushButton("Animate the Flower Blooming")
-        animateButton.clicked.connect(lambda: FlowerMain.StepThree(int(frequencyBox.text()), timeBox.value(),
+        animateButton = QPushButton("Animate Blooming")
+        animateButton.clicked.connect(lambda: FlowerMain.StepThree(nameText.text(), int(frequencyBox.text()), timeBox.value(),
                                                                    axisBox.currentText(), 1, 0.5))
-
-        # All edits that can be made on a flower
-        clearButton = QPushButton("Clear Keyframes")
-        clearTextTitle = QLabel("Name of flower to clear keyframes on")
-        clearText = QLineEdit()
-        clearButton.clicked.connect(lambda: FlowerMain.clearKeyFramesForFlower(clearText.text(), timeBox.value()))
 
         numRowsTitle = QLabel("Which row num do you want to spin: ")
         numRows = QLineEdit()
         numRows.setValidator(intValidator)
-        spinButton = QPushButton("Spin the Flower")
-        spinTextTitle = QLabel("Name of flower to spin")
-        spinText = QLineEdit()
-        spinButton.clicked.connect(lambda: FlowerMain.spinFlowerForFlower(spinText.text(), int(numRows.text())))
+        spinButton = QPushButton("Animate Petals Spin")
+        spinButton.clicked.connect(lambda: FlowerMain.spinFlowerForFlower(nameText.text(), int(numRows.text())))
 
-        layout.addWidget(timeTitle)
-        layout.addWidget(timeBox)
-        layout.addWidget(frequencyTitle)
-        layout.addWidget(frequencyBox)
-        layout.addWidget(axisTitle)
-        layout.addWidget(axisBox)
-        layout.addWidget(speedTitle)
-        layout.addWidget(speedBox)
-        layout.addWidget(animateInstructions)
-        layout.addWidget(animateButton)
+        # All edits that can be made on a flower
+        clearButton = QPushButton("Clear Keyframes")
+        clearButton.clicked.connect(lambda: FlowerMain.clearKeyFramesForFlower(nameText.text(), timeBox.value()))
 
-        layout.addWidget(clearTextTitle)
-        layout.addWidget(clearText)
-        layout.addWidget(clearButton)
+        layout.addWidget(spinTextTitle,0 ,0)
+        layout.addWidget(nameText, 0,1)
+        layout.addWidget(timeTitle, 1,0)
+        layout.addWidget(timeBox, 1,1)
+        layout.addWidget(frequencyTitle, 2,0)
+        layout.addWidget(frequencyBox, 2,1)
+        layout.addWidget(axisTitle, 3,0)
+        layout.addWidget(axisBox, 3,1)
+        layout.addWidget(speedTitle,4,0)
+        layout.addWidget(speedBox, 4,1)
+        layout.addWidget(animateInstructions,5,0,1,2)
+        layout.addWidget(animateButton,6,0,1,2)
 
         layout.addWidget(numRowsTitle)
         layout.addWidget(numRows)
-        layout.addWidget(spinTextTitle)
-        layout.addWidget(spinText)
+
         layout.addWidget(spinButton)
+
+        layout.addWidget(clearButton)
 
         return layout
 

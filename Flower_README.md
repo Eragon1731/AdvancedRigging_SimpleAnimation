@@ -1,6 +1,6 @@
 # Flower Animations
 
-advanced_rigging is a module that contains pipelines to build a simple flower and animate it with python scripts. The module will also contain different ways to edit the flower's form and animation.
+advanced_rigging is a module that contains a tool to build a simple flower and animate it with python scripts. The module will also contain different ways to edit the flower's form and animation.
 
 ## Installation
 
@@ -12,7 +12,7 @@ import advanced_rigging.MainWindow
 advanced_rigging.MainWindow.main()
 
 ## Usage
-```python
+```
 
 Load Assets:
 
@@ -33,7 +33,7 @@ Bulb Center locator Name:  <bulb>_loc
 Animate the Flower:
 ** Be sure to select the controller group(s) you want to animate in this section. **
 1. "Animation Time Length": The total amount of time the animation should run for. Use this to control how the flower blooms and how the petals should spin around the bulb. 
-2. "Keyframe frequency within Time Limit": For every xx amount of seconds, when you want to keyframe. For example, if 5 is entered, then every 5 seconds will have a keyframe. Use this to control the flow of your flower blooming animation. Change or use this to affect how you want to keyframe the petals spinning around the bulb. 
+2. "Keyframe frequency within Time Limit": For every xx amount of frames, when you want to keyframe. For example, if 5 is entered, then every 5 frames will have a keyframe. Use this to control the flow of your flower blooming animation. Change or use this to affect how you want to keyframe the petals spinning around the bulb. 
 3. "Which axis to animate on": On which axis should the petals rotate on. Choose "Z" for a default blooming animation
 4. "Speed of Animation": How quickly the you want the petals to bend during the animation. Change or use this variable to determine how quickly you want the petals to spin around the bulb. 
 5. Click "Animate the Flower Blooming" to create the flower blooming animation
@@ -50,6 +50,3 @@ For example, if you want the inner-most layer, enter 0.
 
 ## In Progress
 Have to test the flower animation tool on other types of assets and see if the tool still works if the User renames assets. Also have not cleaned or commented code for this tool yet. A lot of the UI names and layout designs are still work in progress. If everything listed above is finished, I might consider adding a relocation function so the User can move the flower via one locator. 
-```
-
-

@@ -4,12 +4,10 @@ from Flower import Flower
 
 # This function create keyframes that will bend a petal on an single axis. The User can define the frequency
 # of keyframes, the time of animation, the axis the petal bends on and the angle the petal bends at.
-def animatePetals(ctrls=None, frequency=5, time=120, axis="Z", curr_bend=1, bend_speed=0.5):
+def animatePetals(flower, frequency=5, time=120, axis="Z", curr_bend=1, bend_speed=0.5):
 
     """get the list of all joints for each petal"""
-    if ctrls is None:
-        temp = mc.ls(sl=True)
-        ctrls = [x for x in mc.listRelatives(temp, ad=True, type="transform") if "_ctrl" in x]
+    ctrls = flower.all_ctrls
 
     if ctrls is None:
         mc.warning("Please select the ctrls groups!")
@@ -19,7 +17,8 @@ def animatePetals(ctrls=None, frequency=5, time=120, axis="Z", curr_bend=1, bend
 
     """get every joint in all the petals"""
     for i in range(len(ctrls)):
-        all_ctrls.append(ctrls[i])
+        for j in range(len(ctrls[i])):
+            all_ctrls.append(ctrls[i][j])
 
     """rotate and keyframe all joints within a set amount of time"""
     counter = frequency
