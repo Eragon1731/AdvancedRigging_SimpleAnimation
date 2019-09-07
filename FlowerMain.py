@@ -98,6 +98,7 @@ def StepThree(name, frequency, time, axis, init_bend, speed):
         if flower is None:
             mc.warning("Enter Name of existing Flower! Using a default flower")
             flower = FLOWER_INSTANCES.get(FLOWER_INSTANCES.keys()[0])
+            name = FLOWER_INSTANCES.keys()[0]
 
         # Animate Flower
         FlowerAnimation.animatePetals(flower=flower, frequency=frequency, time=time,
@@ -143,8 +144,10 @@ def spinFlowerForFlower(name, numRows):
     # Check if the name is valid AND if the Row Number indicated exists. If not, tell the User
     if not name:
         mc.warning("Enter Name of Flower you want to animate")
-    elif not numRows:
+        return False
+    if not numRows:
         mc.warning("Row number not entered! Which row of petals do you want to spin?")
+        return False
     else:
         flower = FLOWER_INSTANCES.get(name)
 
@@ -152,6 +155,7 @@ def spinFlowerForFlower(name, numRows):
         if flower is None:
             mc.warning("Enter Name of existing Flower! Using a default flower")
             flower = FLOWER_INSTANCES.get(FLOWER_INSTANCES.keys()[0])
+            name = FLOWER_INSTANCES.keys()[0]
 
         # if cannot find the row number for an existing flower, tell the User to enter a Correct row number.
         status = FlowerAnimation.spinRowAnimation(flower, row_num=numRows)
@@ -160,3 +164,5 @@ def spinFlowerForFlower(name, numRows):
             print "Finished animating Spin for flower: ", name, " at row: no. ", numRows
         else:
             print "Wrong Row Number! Enter a correct one"
+
+        return True
