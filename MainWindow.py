@@ -23,6 +23,11 @@ TAB03_TITLE = "Animate Flower"
 PETAL_NAME = ""
 BULB_NAME = ""
 
+"""
+Creates all the layouts for the tool. There are 3 parts to the tool: Loading the assets, Building the Flower, and
+Animating the Flower
+"""
+
 
 class ExampleTab(QWidget):
     def __init__(self, layout_type, *args, **kwargs):
@@ -36,11 +41,11 @@ class ExampleTab(QWidget):
         self.layout.addLayout(sublayout)
         self.setLayout(self.layout)
 
-
+    # Creates the UI Tab for Loading the Flower Assets
     def layout01(self):
         layout = QGridLayout()
 
-        #Load the flower parts: Allow users to add their flower parts to the list
+        # Allow Users to add their flower parts from local dir
         bulbTitle = QLabel("Bulb Name:")
         bulbNameBox = QLineEdit("lotus_bulb")
         petalTitle = QLabel("Petal Name:")
@@ -49,6 +54,7 @@ class ExampleTab(QWidget):
         pybutton = QPushButton("Load")
         pybutton.clicked.connect(lambda: FlowerMain.StepOne(bulbNameBox.text(), petalNameBox.text()))
 
+        # Organising layout of UI
         layout.addWidget(bulbTitle,0,0)
         layout.addWidget(bulbNameBox,0,1)
         layout.addWidget(petalTitle,1,0)
@@ -57,19 +63,20 @@ class ExampleTab(QWidget):
 
         return layout
 
-    '''create a default flower with default animation'''
+    # Creates the UI Tab for Building the Flower
     def layout02(self):
         layout = QGridLayout()
+
+        # String validator to make sure Users do not use numbers or special chars
         regex = QRegExp("[a-z-A-Z_]+")
         validator = QRegExpValidator(regex)
 
         rowsTitle = QLabel("Assign Petal Rows")
         baseTitle = QLabel("Assign Base Petals")
         nameTitle = QLabel("Name the flower")
-        petalTitle = QLabel("Petal Anim Model Name")
-        bulbTitle = QLabel("Bulb Center Locator Name")
+        petalTitle = QLabel("Petal Name")
+        bulbTitle = QLabel("Bulb Locator Name")
 
-        # Use second tab to edit Flower Attrs
         petalRows = QSpinBox()
         petalRows.setValue(3)
         basePetals = QSpinBox()
@@ -81,22 +88,22 @@ class ExampleTab(QWidget):
         bulbName = QLineEdit("lotus_bulb_loc")
         bulbName.setValidator(validator)
 
-        button = QPushButton("Ok")
+        button = QPushButton("Create the Flower")
 
         button.clicked.connect(lambda: FlowerMain.StepTwo(nameValue.text(), petalName.text(),
                                                 bulbName.text(), petalRows.value(), basePetals.value()))
 
-        # Add widgets to layout
-        layout.addWidget(nameTitle, 0,0)
-        layout.addWidget(nameValue, 0,1)
-        layout.addWidget(petalTitle, 1,0)
-        layout.addWidget(petalName, 1,1)
-        layout.addWidget(bulbTitle, 2,0)
-        layout.addWidget(bulbName, 2,1)
-        layout.addWidget(rowsTitle, 3,0)
-        layout.addWidget(petalRows,3,1 )
-        layout.addWidget(baseTitle , 4,0)
-        layout.addWidget(basePetals, 4,1)
+        # Organising layout of UI
+        layout.addWidget(nameTitle, 0, 0)
+        layout.addWidget(nameValue, 0, 1)
+        layout.addWidget(petalTitle, 1, 0)
+        layout.addWidget(petalName, 1, 1)
+        layout.addWidget(bulbTitle, 2, 0)
+        layout.addWidget(bulbName, 2, 1)
+        layout.addWidget(rowsTitle, 3, 0)
+        layout.addWidget(petalRows, 3, 1)
+        layout.addWidget(baseTitle, 4, 0)
+        layout.addWidget(basePetals, 4, 1)
 
         layout.addWidget(button,5,0,1,2)
 
@@ -104,46 +111,51 @@ class ExampleTab(QWidget):
 
     def layout03(self):
         layout = QGridLayout()
-        intValidator = QIntValidator()
+
+        # String validator to make sure Users do not use numbers or special chars
         regex = QRegExp("[a-z-A-Z_]+")
         validator = QRegExpValidator(regex)
 
-        # Default animation for flower
+        # Titles and Instructions for this tab
         timeTitle = QLabel("Animation Time Length")
         frequencyTitle = QLabel("Keyframe frequency within Time Limit: ")
         axisTitle = QLabel("Which axis to animate on: ")
         speedTitle = QLabel("Speed of Animation: ")
-        animateInstructions = QLabel("Select the ctrl group(s) you want to animate with")
-
+        bloomInstructions= QLabel("Bloom according to all inputs above. MUST enter Flower name")
+        spinInstructions = QLabel("Spin according to all inputs above. MUST enter Flower name AND row number")
+        clearInstructions = QLabel("Clear ALL keyframes. Clear may not affect keyframes created OUTSIDE of tool")
         spinTextTitle = QLabel("Name of flower to animate/edit")
+        numRowsTitle = QLabel("Which row num do you want to spin: ")
+
+        # Input Variables for Animations/Clear Keyframes
         nameText = QLineEdit()
         nameText.setValidator(validator)
-
         timeBox = QSpinBox()
         timeBox.setRange(0, 240)
         timeBox.setValue(120)
         frequencyBox = QSpinBox()
         frequencyBox.setValue(5)
-
         axisBox = QComboBox()
         axisBox.addItems(["X", "Y", "Z"])
         speedBox = QSpinBox()
         speedBox.setRange(1, 20)
-
-
-        animateButton = QPushButton("Animate Blooming")
-        animateButton.clicked.connect(lambda: FlowerMain.StepThree(nameText.text(), frequencyBox.value(),
-                                                                   timeBox.value(), axisBox.currentText(), 1, 0.5))
-
-        numRowsTitle = QLabel("Which row num do you want to spin: ")
         numRows = QSpinBox()
         spinButton = QPushButton("Animate Petals Spin")
+
+        # Blooming Button
+        animateButton = QPushButton("Animate Blooming")
+        animateButton.clicked.connect(lambda: FlowerMain.StepThree(nameText.text(), frequencyBox.value(), timeBox.value(),
+                                                                   axisBox.currentText(), 0, speedBox.value()))
+
+        # Spin Button
         spinButton.clicked.connect(lambda: FlowerMain.spinFlowerForFlower(nameText.text(), numRows.value()))
 
-        # All edits that can be made on a flower
+        # Clear Button
         clearButton = QPushButton("Clear Keyframes")
         clearButton.clicked.connect(lambda: FlowerMain.clearKeyFramesForFlower(nameText.text(), timeBox.value()))
 
+        # Organising layout of UI
+        # Variables
         layout.addWidget(spinTextTitle,0 ,0)
         layout.addWidget(nameText, 0,1)
         layout.addWidget(timeTitle, 1,0)
@@ -154,17 +166,23 @@ class ExampleTab(QWidget):
         layout.addWidget(axisBox, 3,1)
         layout.addWidget(speedTitle,4,0)
         layout.addWidget(speedBox, 4,1)
-        layout.addWidget(animateInstructions,5,0,1,2)
-        layout.addWidget(animateButton,6,0,1,2)
+        layout.addWidget(numRowsTitle ,5,0)
+        layout.addWidget(numRows,5,1)
 
-        layout.addWidget(numRowsTitle)
-        layout.addWidget(numRows)
+        # Buttons
+        layout.addWidget(bloomInstructions,6,0,1,2)
+        layout.addWidget(animateButton,7,0,1,2)
 
-        layout.addWidget(spinButton)
+        layout.addWidget(spinInstructions,8,0,1,2)
+        layout.addWidget(spinButton,9,0,1,2)
 
-        layout.addWidget(clearButton)
+        layout.addWidget(clearInstructions, 10,0,1,2)
+        layout.addWidget(clearButton, 11,0,1,2)
 
         return layout
+
+
+""" This is the Main UI Window for the Tool. Will have 3 tabs with all the capabilities of tool """
 
 
 class MainWindow(QTabWidget):
@@ -180,12 +198,12 @@ class MainWindow(QTabWidget):
         self.setWindowTitle(WIN_TITLE)
         self.setLayout(QGridLayout())
 
-        #create a tab for each category of functionality
+        # Create a tab for each category of functionality
         tab01 = ExampleTab("layout01")
         tab02 = ExampleTab("layout02")
         tab03 = ExampleTab("layout03")
 
-        #Add all the tabs
+        # Add all the tabs
         self.addTab(tab01, TAB01_TITLE)
         self.addTab(tab02, TAB02_TITLE)
         self.addTab(tab03, TAB03_TITLE)
